@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dekatriamart_warehouse/widgets/left_drawer.dart';
+import 'package:dekatriamart_warehouse/widgets/item.dart';
 
 class ItemFormPage extends StatefulWidget {
   const ItemFormPage({super.key});
@@ -19,9 +20,7 @@ class _ItemFormPageState extends State<ItemFormPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Form Tambah Item',
-        ),
+        title: const Text('Form Tambah Item'),
         backgroundColor: const Color(0xFF1f2937),
         foregroundColor: Colors.white,
       ),
@@ -145,6 +144,17 @@ class _ItemFormPageState extends State<ItemFormPage> {
                     ),
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
+                        Item newItem = Item(
+                          name: _name,
+                          amount: _amount,
+                          price: _price,
+                          description: _description,
+                        );
+
+                        setState(() {
+                          items.add(newItem);
+                        });
+
                         showDialog(
                           context: context,
                           builder: (context) {
@@ -160,19 +170,23 @@ class _ItemFormPageState extends State<ItemFormPage> {
                                   children: [
                                     Text(
                                       'Nama: $_name',
-                                      style: const TextStyle(color: Colors.white),
+                                      style:
+                                          const TextStyle(color: Colors.white),
                                     ),
                                     Text(
                                       'Jumlah: $_amount',
-                                      style: const TextStyle(color: Colors.white),
+                                      style:
+                                          const TextStyle(color: Colors.white),
                                     ),
                                     Text(
                                       'Harga: $_price',
-                                      style: const TextStyle(color: Colors.white),
+                                      style:
+                                          const TextStyle(color: Colors.white),
                                     ),
                                     Text(
                                       "Deskripsi: $_description",
-                                      style: const TextStyle(color: Colors.white),
+                                      style:
+                                          const TextStyle(color: Colors.white),
                                     ),
                                   ],
                                 ),

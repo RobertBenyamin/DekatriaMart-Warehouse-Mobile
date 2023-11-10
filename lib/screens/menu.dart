@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dekatriamart_warehouse/widgets/shop_item.dart';
+import 'package:dekatriamart_warehouse/screens/item_list.dart';
 import 'package:dekatriamart_warehouse/screens/item_form.dart';
 import 'package:dekatriamart_warehouse/widgets/left_drawer.dart';
 
@@ -47,7 +48,7 @@ class MyHomePage extends StatelessWidget {
               GridView.count(
                 // Container pada card kita.
                 primary: true,
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(8),
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
                 crossAxisCount: 3,
@@ -84,6 +85,11 @@ class ShopCard extends StatelessWidget {
                 content: Text("Kamu telah menekan tombol ${item.name}!")));
           
           // Navigate ke route yang sesuai (tergantung jenis tombol)
+          if (item.name == "Lihat Item") {
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return const ItemListPage();
+            }));
+          }
           if (item.name == "Tambah Item") {
             Navigator.push(context, MaterialPageRoute(builder: (context) {
               return const ItemFormPage();
