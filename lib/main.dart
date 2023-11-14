@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:dekatriamart_warehouse/menu.dart';
+import 'package:dekatriamart_warehouse/screens/menu.dart';
 
 void main() {
   runApp(const MyApp());

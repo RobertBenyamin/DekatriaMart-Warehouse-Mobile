@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:dekatriamart_warehouse/widgets/shop_item.dart';
+import 'package:dekatriamart_warehouse/screens/item_list.dart';
+import 'package:dekatriamart_warehouse/screens/item_form.dart';
+import 'package:dekatriamart_warehouse/widgets/left_drawer.dart';
 
 class MyHomePage extends StatelessWidget {
   MyHomePage({Key? key}) : super(key: key);
 
   final List<ShopItem> items = [
-    ShopItem("Lihat Item", Icons.checklist, Colors.blue), // Menambahkan warna
-    ShopItem("Tambah Item", Icons.add_shopping_cart, Colors.green), // Menambahkan warna
-    ShopItem("Logout", Icons.logout, Colors.red), // Menambahkan warna
+    ShopItem("Lihat Item", Icons.checklist, const Color(0xFF007AAC)),
+    ShopItem("Tambah Item", Icons.edit_note, const Color(0xFF0BA484)),
+    ShopItem("Logout", Icons.logout, const Color(0xFFef4444)),
   ];
 
   @override
@@ -17,8 +21,10 @@ class MyHomePage extends StatelessWidget {
           'Dekatriamart Warehouse',
           style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Colors.indigo,
+        backgroundColor: const Color(0xFF1f2937),
+        foregroundColor: Colors.white,
       ),
+      drawer: const LeftDrawer(),
       body: SingleChildScrollView(
         // Widget wrapper yang dapat discroll
         child: Padding(
@@ -42,7 +48,7 @@ class MyHomePage extends StatelessWidget {
               GridView.count(
                 // Container pada card kita.
                 primary: true,
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(8),
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
                 crossAxisCount: 3,
@@ -60,14 +66,6 @@ class MyHomePage extends StatelessWidget {
   }
 }
 
-class ShopItem {
-  final String name;
-  final IconData icon;
-  final Color color;
-
-  ShopItem(this.name, this.icon, this.color);
-}
-
 class ShopCard extends StatelessWidget {
   final ShopItem item;
 
@@ -75,7 +73,7 @@ class ShopCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
+    return Card(
       color: item.color,
       child: InkWell(
         // Area responsive terhadap sentuhan
@@ -85,6 +83,18 @@ class ShopCard extends StatelessWidget {
             ..hideCurrentSnackBar()
             ..showSnackBar(SnackBar(
                 content: Text("Kamu telah menekan tombol ${item.name}!")));
+          
+          // Navigate ke route yang sesuai (tergantung jenis tombol)
+          if (item.name == "Lihat Item") {
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return const ItemListPage();
+            }));
+          }
+          if (item.name == "Tambah Item") {
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return const ItemFormPage();
+            }));
+          }
         },
         child: Container(
           // Container untuk menyimpan Icon dan Text
