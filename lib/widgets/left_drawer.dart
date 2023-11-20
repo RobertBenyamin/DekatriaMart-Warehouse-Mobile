@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dekatriamart_warehouse/screens/menu.dart';
-import 'package:dekatriamart_warehouse/screens/item_list.dart';
+import 'package:dekatriamart_warehouse/screens/list_item.dart';
 import 'package:dekatriamart_warehouse/screens/item_form.dart';
 
 class LeftDrawer extends StatelessWidget {
@@ -54,11 +54,11 @@ class LeftDrawer extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.checklist),
-              title: const Text('Lihat Item'),
+              title: const Text('Daftar Item'),
               // Bagian redirection ke ShopFormPage
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return const ItemListPage();
+                  return const ItemPage();
                 }));
               },
             ),
