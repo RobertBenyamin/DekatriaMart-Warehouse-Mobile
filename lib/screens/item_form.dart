@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:provider/provider.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:dekatriamart_warehouse/widgets/left_drawer.dart';
-import 'package:dekatriamart_warehouse/widgets/item.dart';
+import 'package:dekatriamart_warehouse/screens/menu.dart';
 
 class ItemFormPage extends StatefulWidget {
   const ItemFormPage({super.key});
@@ -18,6 +21,8 @@ class _ItemFormPageState extends State<ItemFormPage> {
 
   @override
   Widget build(BuildContext context) {
+    final request = context.watch<CookieRequest>();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Form Tambah Item'),
@@ -112,6 +117,9 @@ class _ItemFormPageState extends State<ItemFormPage> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
+                  keyboardType: TextInputType.multiline,
+                  minLines: 1,
+                  maxLines: 5,
                   decoration: InputDecoration(
                     hintText: "Deskripsi",
                     labelText: "Deskripsi",
@@ -142,71 +150,35 @@ class _ItemFormPageState extends State<ItemFormPage> {
                       backgroundColor:
                           MaterialStateProperty.all(const Color(0xFF1F2937)),
                     ),
-                    onPressed: () {
+                    onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-                        Item newItem = Item(
-                          name: _name,
-                          amount: _amount,
-                          price: _price,
-                          description: _description,
-                        );
-
-                        setState(() {
-                          items.add(newItem);
-                        });
-
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              backgroundColor: const Color(0xFF1F2937),
-                              title: const Text(
-                                'Item berhasil tersimpan',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              content: SingleChildScrollView(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Nama: $_name',
-                                      style:
-                                          const TextStyle(color: Colors.white),
-                                    ),
-                                    Text(
-                                      'Jumlah: $_amount',
-                                      style:
-                                          const TextStyle(color: Colors.white),
-                                    ),
-                                    Text(
-                                      'Harga: $_price',
-                                      style:
-                                          const TextStyle(color: Colors.white),
-                                    ),
-                                    Text(
-                                      "Deskripsi: $_description",
-                                      style:
-                                          const TextStyle(color: Colors.white),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              actions: [
-                                TextButton(
-                                  child: const Text(
-                                    'OK',
-                                    style: TextStyle(color: Color(0xFF50A0FF)),
-                                  ),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                              ],
-                            );
-                          },
-                        );
+                        // Kirim ke Django dan tunggu respons
+                        final response = await request.postJson(
+                            "https://robert-benyamin-tugas.pbp.cs.ui.ac.id/create-flutter/",
+                            jsonEncode(<String, String>{
+                              'name': _name,
+                              'amount': _amount.toString(),
+                              'description': _description,
+                              'price': _price.toString(),
+                            }));
+                        if (response['status'] == 'success') {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                            content: Text("Item baru berhasil disimpan!"),
+                          ));
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => MyHomePage()),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                            content:
+                                Text("Terdapat kesalahan, silakan coba lagi."),
+                          ));
+                        }
                       }
-                      _formKey.currentState!.reset();
                     },
                     child: const Text(
                       "Save",
