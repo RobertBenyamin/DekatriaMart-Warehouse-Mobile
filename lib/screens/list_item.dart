@@ -103,12 +103,20 @@ class _ItemPageState extends State<ItemPage> {
                                         ),
                                       ),
                                       const SizedBox(height: 16),
-                                      Text(
-                                        "Rp${snapshot.data![index].fields.price}",
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                                      Row(
+                                        children: <Widget>[
+                                          const Icon(
+                                            Icons.storage_rounded,
+                                          ),
+                                          const SizedBox(width: 2.0),
+                                          Text(
+                                            "${snapshot.data![index].fields.amount}",
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
