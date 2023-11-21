@@ -142,6 +142,8 @@ https://www.codingninjas.com/studio/library/flutter-stateful-and-stateless-widge
 
 13. `Icon`: Widget ini digunakan untuk menampilkan icon. Setiap card memiliki icon yang berbeda sesuai dengan jenis item yang direpresentasikan.
 
+14. `SnackBar`: Widget ini digunakan untuk menampilkan pesan umpan balik singkat di bagian bawah layar.
+
 <small>
 Sumber: <br>  
 https://api.flutter.dev/flutter/material/material-library.html
@@ -241,6 +243,178 @@ Dalam konteks Flutter, Clean Architecture biasanya terdiri dari beberapa lapisan
 Sumber: <br>  
 https://medium.com/@samra.sajjad0001/flutter-clean-architecture-5de5e9b8d093 <br>
 https://dev.to/marwamejri/flutter-clean-architecture-1-an-overview-project-structure-4bhf
+</small>
+
+</details>
+
+<details>
+<summary>Tugas 9</summary>
+
+## Daftar Isi
+
+1. [Proses Pengerjaan Tugas](#proses-pengerjaan-tugas-2)
+2. [Apakah bisa kita melakukan pengambilan data JSON tanpa membuat model terlebih dahulu? Jika iya, apakah hal tersebut lebih baik daripada membuat model sebelum melakukan pengambilan data JSON?](#apakah-bisa-kita-melakukan-pengambilan-data-json-tanpa-membuat-model-terlebih-dahulu-jika-iya-apakah-hal-tersebut-lebih-baik-daripada-membuat-model-sebelum-melakukan-pengambilan-data-json)
+3. [Fungsi dari CookieRequest dan Mengapa Instance CookieRequest Perlu untuk Dibagikan ke Semua Komponen di Aplikasi Flutter](#fungsi-dari-cookierequest-dan-mengapa-instance-cookierequest-perlu-untuk-dibagikan-ke-semua-komponen-di-aplikasi-flutter)
+4. [Mekanisme Pengambilan Data dari JSON ke Flutter](#mekanisme-pengambilan-data-dari-json-ke-flutter)
+5. [Mekanisme Autentikasi dari Input Data Akun pada Flutter ke Django](#mekanisme-autentikasi-dari-input-data-akun-pada-flutter-ke-django)
+6. [Daftar Widget pada Tugas ini beserta Kegunaannya](#daftar-widget-pada-tugas-ini-beserta-kegunaannya-1)
+
+## Proses Pengerjaan Tugas
+
+1. Menambahkan dependensi yang diperlukan.
+    ```
+    flutter pub add provider
+    flutter pub add pbp_django_auth
+    flutter pub add http
+    ```
+2. Menyediakan `CookieRequest` *library* ke semua *child widgets* dengan menggunakan `Provider` pada file `menu.dart`.
+3. Membuat file `login.dart` pada direktori `screens` yang berfungsi untuk menampilkan form untuk login.
+4. Mengarahkan `main.dart` ke `login.dart`.
+5. Membuat file `item.dart` pada `models` yang berisikan class `Item`.
+6. Membuat file `list_item.dart` pada direktori `screens` yang berfungsi untuk menampilkan list seluruh `Item` yang telah di*fetch* dari server.
+7. Memodifikasi file `item_form.dart` pada direktori `screens` agar dapat mengubah input yang diterima ke dalam JSON kemudian mengirimkannya ke server.
+8. Membuat file `detail_screen.dart` pada direktori `screens` yang berfungsi untuk menampilkan seluruh informasi Item dengan detail.
+9. Memodifikasi `menu.dart` pada direktori `screens` agar tombol logout dapat membuat pengguna keluar dari aplikasi kemudian pergi ke halaman login.
+
+## Apakah bisa kita melakukan pengambilan data JSON tanpa membuat model terlebih dahulu? Jika iya, apakah hal tersebut lebih baik daripada membuat model sebelum melakukan pengambilan data JSON?
+
+Ya, kita bisa melakukan pengambilan data JSON tanpa membuat model terlebih dahulu, tetapi hal ini tidak terlalu disarankan karena JSON menggunakan syntax JavaScript sehingga rawan terjadi error ketika berinteraksi dengan JSON polos karena adanya perbedaan syntax tersebut. Di sisi lain, ketika kita membuat model terlebih dahulu, kita memastikan JSON telah dikonversi ke syntax pemrograman yang sedang kita gunakan sehingga menjadi lebih aman ketika mengolah data tersebut.
+
+<small>
+Sumber: <br>  
+https://medium.com/geekculture/analyze-json-data-like-a-pro-without-writing-a-single-line-of-code-be5a0ec2b335 <br>
+https://medium.flutterdevs.com/parsing-complex-json-in-flutter-b7f991611d3e
+</small>
+
+## Fungsi dari CookieRequest dan Mengapa Instance CookieRequest Perlu untuk Dibagikan ke Semua Komponen di Aplikasi Flutter
+
+Fungsi dari CookieRequest adalah untuk menyediakan akses ke data cookie yang dibutuhkan oleh berbagai bagian dari aplikasi. CookieRequest perlu untuk dibagikan ke semua komponen di aplikasi Flutter agar komponen-komponen yang berbeda dapat mengakses dan menggunakan data cookie tersebut tanpa perlu membuat instance CookieRequest baru setiap kali. Membagikan instance CookieRequest ke semua komponen mempermudah koordinasi dan pertukaran data antar komponen dalam aplikasi. Hal ini dapat meningkatkan efisiensi dan memastikan konsistensi dalam penggunaan data cookie di seluruh aplikasi Flutter.
+
+<small>
+Sumber: <br>  
+https://pub.dev/packages/pbp_django_auth
+</small>
+
+## Mekanisme Pengambilan Data dari JSON ke Flutter
+
+1. Mengirimkan GET Request ke url `http://robert-benyamin-tugas.pbp.cs.ui.ac.id/get-item/` untuk mendapatkan JSON yang berisi list of Items.
+    ```dart
+    var url = Uri.parse('http://robert-benyamin-tugas.pbp.cs.ui.ac.id/get-item/');
+        var response = await http.get(
+          url,
+          headers: {"Content-Type": "application/json"},
+        );
+    ```
+2. Menggunakan `jsonDecode` untuk mengubah http response body menjadi bentuk JSON.
+    ```dart
+    var data = jsonDecode(utf8.decode(response.bodyBytes));
+    ```
+3. Membuat object Item menggunakan data JSON yang telah didapatkan kemudian menyimpannya dalam `listItem`.
+    ```dart
+    List<Item> listItem = [];
+    for (var d in data) {
+      if (d != null) {
+        listItem.add(Item.fromJson(d));
+      }
+    }
+    return listItem;
+    ```
+4. Menampilkan semua Item menggunakan `ListView.builder()`. Setiap Item ditampilkan menggunakan `Card()` yang dibungkus oleh `InkWell()`.
+    ```dart
+    ListView.builder(
+      itemCount: snapshot.data!.length,
+      itemBuilder: (_, index) => InkWell(
+            ...
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Card(
+                ...
+              ),
+            ),
+      )
+    )
+    ```
+5. Jika suatu Item diklik, maka seluruh data Item tersebut akan dikirimkan ke halaman `DetailItemPage()` untuk kemudian ditampilkan secara lebih detail.
+    ```dart
+    onTap: () {
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) {
+        return DetailItemPage(
+            fields: snapshot.data![index].fields);
+      }));
+    },
+    ```
+
+## Mekanisme Autentikasi dari Input Data Akun pada Flutter ke Django
+
+1. Membuat object `request` menggunakan `CookieRequest`.
+    ```dart
+    final request = context.watch<CookieRequest>();
+    ```
+2. Mengambil input `Username` dan `Password` dari pengguna menggunakan `TextFormField()`.
+3. Mengirimkan data Username dan Password ke url http://robert-benyamin-tugas.pbp.cs.ui.ac.id/auth/login/ dengan melakukan login request.
+    ```dart
+    final response =
+        await request.login("http://robert-benyamin-tugas.pbp.cs.ui.ac.id/auth/login/", {
+      'username': username,
+      'password': password,
+    });
+    ```
+4. Jika autentikasi berhasil, maka pengguna diarahkan ke halaman `MyHomePage()`. Jika gagal maka akan ditampilkan `AlertDialog()` berisi pesan bahwa login gagal.
+    ```dart
+    if (request.loggedIn) {
+      ...
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => MyHomePage()),
+      );
+      ...
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          ...
+        ),
+      );
+    }
+    ```
+
+## Daftar Widget pada Tugas ini beserta Kegunaannya
+
+1. `Provider`: Widget ini menyediakan objek atau data untuk diakses oleh widget di bawahnya.
+
+2. `LeftDrawer`: Widget untuk menampilkan drawer di bagian kiri pada halaman utama. 
+
+3. `TextFormField`: Widget untuk menerima input teks dari pengguna pada formulir. 
+
+4. `ElevatedButton`: Widget untuk menampilkan tombol untuk memicu tindakan tertentu.
+
+5. `Row`: Widget ini digunakan untuk mengatur letak *children* widgetnya secara horizontal.
+
+6. `ListView`: Widget ini digunakan untuk mengatur letak *children* widgetnya dalam sebuah *scrollable list* secara vertikal.
+
+7. `FutureBuilder`:  Widget ini digunakan untuk membangun antarmuka pengguna berdasarkan hasil dari sebuah **Future**, yang biasanya digunakan untuk menangani operasi asinkron seperti permintaan HTTP, pembacaan file, atau tugas-tugas asinkron 
+lainnya. 
+
+8. `CircularProgressIndicator`: Widget ini digunakan sebagai indikator *loading* ketika aplikasi sedang menunggu data dari server.
+
+9. `Navigator.push`: Widget ini digunakan untuk menambahkan rute lain ke atas tumpukan *screen* (*stack*) saat ini.
+
+10. `Navigator.pushReplacement`: Widget digunakan untuk mengganti rute paling atas tumpukan *screen* (*stack*) saat ini.
+
+11. `MaterialPageRoute`: Widget ini digunakan untuk memberikan efek animasi ketika berpindah layar.
+
+12. `Align`: Widget ini digunakan untuk menempatkan *child* widget di dalamnya secara relatif terhadap posisi yang ditentukan di dalam *parent*. 
+
+13. `SizedBox`: Widget ini digunakan untuk memberikan dimensi tetap pada *child* widget di dalamnya. 
+
+14. `NumberFormat.decimalPattern`: WIdget ini digunakan untuk memformat angka dengan pemisah ribuan.
+
+Beberapa widget lainnya masih sama seperti tugas sebelumnya yang dapat di lihat [di sini](#daftar-widget-pada-tugas-ini-beserta-kegunaannya)
+
+<small>
+Sumber: <br>  
+https://api.flutter.dev/flutter/material/material-library.html
 </small>
 
 </details>
